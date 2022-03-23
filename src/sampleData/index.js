@@ -13,7 +13,7 @@ export const testDataTemplate1 = [
     id: "2",
     values: {
       name: "Jim",
-      jobTitle: "Sales",
+      jobTitle: "Sales Rep",
       employer: "Google",
     },
   },
@@ -33,6 +33,6 @@ export const basicSample = [
     name: "basicSample1",
     id: "1",
     template:
-      "<h3>Hello, my name is {{name}}</h3><p>I am a {{jobTitle}} at <b>{{employer}}</b></p>",
+      "<h3>Hello, my name is {{name}}</h3>\n<p>I am a {{jobTitle}} at <b>{{employer}}</b></p>",
   },
 ];
