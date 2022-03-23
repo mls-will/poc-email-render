@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { basicSample, testDataTemplate1 } from "./sampleData";
+import { basicSample, testDataTemplate1, testEvents } from "./sampleData";
 import AceEditor from "react-ace";
 import handlebars from "handlebars/dist/handlebars.min.js";
 
@@ -15,8 +15,11 @@ function App() {
   const [template, setTemplate] = useState("");
   const [sampleData, setSampleData] = useState({});
   const [renderedTemplate, setRenderedTemplate] = useState("");
+  const [events, setEvents] = useState([]);
+  const [event, setEvent] = useState({});
 
   const onChange = (newValue) => {
+    console.log("typeof in onChange", typeof newValue);
     setTemplate(newValue);
   };
 
@@ -33,8 +36,17 @@ function App() {
     setRenderedTemplate(rendered);
   };
 
-  const handleTemplateChange = (e) => {
+  const handleSampleDataChange = (e) => {
     setSampleData(JSON.parse(e.target.value));
+  };
+
+  const handleTemplateChange = (e) => {
+    console.log("change handler: ", JSON.stringify(e.target.value));
+    setEvent(e.target.value);
+  };
+
+  const handleEventChange = (e) => {
+    setEvent(e.target.value);
   };
 
   useEffect(() => {
@@ -43,7 +55,23 @@ function App() {
 
   useEffect(() => {
     setTemplate(basicSample[0].template);
+    setEvents(testEvents);
   }, []);
+
+  useEffect(() => {
+    console.log("typeof events: ", typeof events);
+    console.log("events:");
+    console.log(events);
+  }, [events]);
+
+  useEffect(() => {
+    console.log("event: ", event);
+    console.log("typeof event: ", typeof event);
+    if (isValidJsonString(event)) {
+      console.log("valid:");
+      console.log(JSON.parse(event));
+    }
+  }, [event]);
 
   const isValidJsonString = (str) => {
     try {
@@ -62,17 +90,46 @@ function App() {
         <table>
           <tr>
             <td>
+              <h3>Event</h3>
+              <select onChange={(e) => handleEventChange(e)}>
+                {events.map((i) => {
+                  return (
+                    <option
+                      name={i.name}
+                      id={i.eventId}
+                      value={JSON.stringify(i)}
+                    >
+                      {i.name}
+                    </option>
+                  );
+                })}
+              </select>
               <h3>Template</h3>
+              <select onChange={(e) => handleTemplateChange(e)}>
+                {events.map((i) => {
+                  console.log(i);
+                  return (
+                    <option
+                      name={i.name}
+                      id={i.eventId}
+                      value={JSON.stringify(i)}
+                    ></option>
+                  );
+                })}
+              </select>
               <AceEditor
                 mode="handlebars"
                 theme="nord_dark"
                 onChange={onChange}
                 name="template"
-                value={template}
+                value={event}
                 editorProps={{ $blockScrolling: true }}
                 height="300px"
                 wrapEnabled={true}
                 enableBasicAutocompletion={true}
+                setOptions={{
+                  useWorker: false,
+                }}
               />
             </td>
             <td>
@@ -99,7 +156,7 @@ function App() {
           <tr>
             <td>
               <h3>Sample Data</h3>
-              <select onChange={(e) => handleTemplateChange(e)}>
+              <select onChange={(e) => handleSampleDataChange(e)}>
                 {testDataTemplate1.map((i) => {
                   return (
                     <option
