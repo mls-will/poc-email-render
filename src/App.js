@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import { useState, useEffect } from "react";
 import "./App.css";
+import { basicSample, testDataTemplate1 } from "./sampleData";
 import AceEditor from "react-ace";
 import handlebars from "handlebars/dist/handlebars.min.js";
 
@@ -8,15 +9,16 @@ import "ace-builds/src-noconflict/mode-handlebars";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-html";
 import "ace-builds/src-noconflict/theme-nord_dark";
+import "ace-builds/src-noconflict/mode-text";
 
 function App() {
   const [template, setTemplate] = useState("");
   const [sampleData, setSampleData] = useState({});
   const [renderedTemplate, setRenderedTemplate] = useState("");
 
-  function onChange(newValue) {
+  const onChange = (newValue) => {
     setTemplate(newValue);
-  }
+  };
 
   const sampleDataOnChange = (newValue) => {
     setSampleData(newValue);
@@ -24,24 +26,22 @@ function App() {
 
   const renderTemplate = () => {
     const str = handlebars.compile(template);
-    const data = JSON.parse(sampleData);
+    const data = sampleData;
     const rendered = str(data);
-    console.log(rendered);
-    console.log("clicked");
     setRenderedTemplate(rendered);
   };
 
-  useEffect(() => {
-    console.log("sample Data: ", sampleData);
-    console.log(typeof sampleData);
-    //const jsontry = JSON.parse(sampleData);
-    //console.log("as Json: ", jsontry);
-  }, [sampleData]);
+  const handleTemplateChange = (e) => {
+    setSampleData(JSON.parse(e.target.value));
+  };
 
   useEffect(() => {
-    console.log(template);
-    console.log(typeof template);
-  }, [template]);
+    setSampleData(testDataTemplate1[0].values);
+  }, []);
+
+  useEffect(() => {
+    setTemplate(basicSample[0].template);
+  }, []);
 
   return (
     <div className="App">
@@ -57,18 +57,17 @@ function App() {
                 theme="nord_dark"
                 onChange={onChange}
                 name="template"
+                value={template}
                 editorProps={{ $blockScrolling: true }}
               />
             </td>
             <td>
-              <h3>Rendered</h3>
-              <AceEditor
-                mode="html"
-                theme="nord_dark"
-                name="rendered"
-                value={renderedTemplate}
-                editorProps={{ $blockScrolling: true }}
-              />
+              <div style={{ marginLeft: "60px" }}>
+                <h3>Preview</h3>
+                <div>
+                  <div dangerouslySetInnerHTML={{ __html: renderedTemplate }} />
+                </div>
+              </div>
             </td>
           </tr>
         </table>
@@ -78,10 +77,24 @@ function App() {
           <tr>
             <td>
               <h3>Sample Data</h3>
+              <select onChange={(e) => handleTemplateChange(e)}>
+                {testDataTemplate1.map((i) => {
+                  return (
+                    <option
+                      name={i.name}
+                      id={i.id}
+                      value={JSON.stringify(i.values)}
+                    >
+                      {i.name}
+                    </option>
+                  );
+                })}
+              </select>
               <AceEditor
                 mode="javascript"
                 theme="nord_dark"
                 name="sampleData"
+                value={JSON.stringify(sampleData, null, 4)}
                 onChange={sampleDataOnChange}
                 editorProps={{ $blockScrolling: true }}
               />
@@ -90,7 +103,14 @@ function App() {
         </table>
       </div>
       <div>
-        <button onClick={() => renderTemplate()}>Do This</button>
+        <button
+          onClick={() => {
+            console.log(renderedTemplate);
+            renderTemplate();
+          }}
+        >
+          See Preview of Rendered Template
+        </button>
       </div>
     </div>
   );
