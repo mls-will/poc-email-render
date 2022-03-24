@@ -15,6 +15,14 @@ export const testDataTemplate1 = [
       name: "Jim",
       jobTitle: "Sales Rep",
       employer: "Google",
+      lineItems: [
+        {
+          value: "one",
+        },
+        {
+          value: "two",
+        },
+      ],
     },
   },
   {
@@ -33,7 +41,7 @@ export const basicSample = [
     name: "basicSample1",
     id: "1",
     template:
-      "<h3>Hello, my name is {{name}}</h3>\n<p>I am a {{jobTitle}} at <b>{{employer}}</b></p>",
+      "<h3>Hello, my name is {{name}}</h3>\n<p>I am a {{jobTitle}} at <b>{{employer}}</b></p><ul>{{#each lineItems}}<li>{{value}}</li>{{/each}}</ul>",
   },
 ];
 
